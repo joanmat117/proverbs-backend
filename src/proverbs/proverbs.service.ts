@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProverbDto } from './dto/create-proverb.dto';
 import { UpdateProverbDto } from './dto/update-proverb.dto';
 import { ProverbsModel } from './models/proverbs.model';
@@ -19,15 +19,31 @@ export class ProverbsService {
     return this.proverbsModel.getAll();
   }
 
-  getOne(id: string):Proverb|undefined {
-    return this.proverbsModel.getOne(id)
+  getOne(id: string):Proverb {
+    const res = this.proverbsModel.getOne(id)
+
+    if(!res) throw new NotFoundException(`Proverb with id ${id} does not exists`)
+
+    return res
   }
 
-  update(id: string, updateProverbDto: UpdateProverbDto):Proverb|undefined {
-    return this.proverbsModel.update(id,updateProverbDto)
+  update(id: string, updateProverbDto: UpdateProverbDto):Proverb {
+    const res = this.proverbsModel.update(id,updateProverbDto)
+
+    if(!res) throw new NotFoundException(`Proverb with id ${id} does not exists`)
+
+    return res
   }
 
   delete(id: string):Boolean {
-    return this.proverbsModel.delete(id)
+    const res = this.proverbsModel.delete(id)
+
+    if(!res) throw new NotFoundException(`Proverb with id ${id} does not exists`)
+
+    return res
+  }
+
+  getRandom():Proverb {
+    return this.proverbsModel.getRandom()
   }
 }
