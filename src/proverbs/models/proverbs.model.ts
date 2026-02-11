@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { Proverb } from "../types/proverb.type";
 import {randomUUID} from 'node:crypto'
 import { CreateProverbDto } from "../dto/create-proverb.dto";
@@ -7,10 +7,7 @@ import { UpdateProverbDto } from "../dto/update-proverb.dto";
 @Injectable()
 export class ProverbsModel {
   
-  private proverbs:Proverb[] = [{
-    id:'70c068ce-db52-45e0-8f44-b7c924659859',
-    content: 'No juzgues un libro por su portada'
-  }]
+  private proverbs:Proverb[] = []
 
   getAll(){
     return this.proverbs
@@ -26,10 +23,24 @@ export class ProverbsModel {
 
     this.proverbs.push({
       content:proverb.content,
-      id
+      id,
+      created_at: new Date()
     })
 
     return id 
+  }
+
+  bulkCreate(proverbs:CreateProverbDto[]){
+    this.proverbs = [
+      ...this.proverbs,
+      ...proverbs.map(proverb=>({
+        content:proverb.content,
+        id:randomUUID(),
+        created_at: new Date()
+      }))
+    ]
+
+    return true
   }
 
   delete(id:string){
@@ -54,6 +65,13 @@ export class ProverbsModel {
     }
 
     return this.proverbs[proverbIdx]
+  }
+
+  getRandom(){
+    if(this.proverbs.length === 0) throw new NotFoundException()
+    const randomIdx = Math.trunc((this.proverbs.length) * Math.random())
+
+    return this.proverbs[randomIdx]
   }
 
 }
