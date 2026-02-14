@@ -1,31 +1,34 @@
-import { Injectable, InternalServerErrorException, OnModuleInit } from "@nestjs/common";
-import { ProverbsModel } from "./models/proverbs.model";
-import { PROVERBS_SEED } from "./data/seeds";
-import {ConfigService} from '@nestjs/config'
+import {
+  Injectable,
+  InternalServerErrorException,
+  OnModuleInit,
+} from '@nestjs/common';
+import { ProverbsModel } from './models/proverbs.model';
+import { PROVERBS_SEED } from './data/seeds';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SeederService implements OnModuleInit {
-
   constructor(
     private readonly proverbsModel: ProverbsModel,
-    private readonly configService: ConfigService
-  ){}
+    private readonly configService: ConfigService,
+  ) {}
 
   onModuleInit() {
-    const isDevelopment = this.configService.get('NODE_ENV') === 'development'
+    const isDevelopment = this.configService.get('NODE_ENV') === 'development';
 
     if (isDevelopment) {
-      this.populateProverbs()
+      this.populateProverbs();
     }
   }
 
-  populateProverbs(){
+  async populateProverbs() {
     try {
-      this.proverbsModel.bulkCreate(PROVERBS_SEED)
+      await this.proverbsModel.bulkCreate(PROVERBS_SEED);
 
-      return true
+      return true;
     } catch (e) {
-      throw new InternalServerErrorException()
+      throw new InternalServerErrorException();
     }
   }
 }

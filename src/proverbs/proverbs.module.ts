@@ -7,6 +7,6 @@ import { ConfigService } from '@nestjs/config';
 
 @Module({
   controllers: [ProverbsController],
-  providers: [ProverbsService,ProverbsModel,SeederService,ConfigService],
+  providers: [ProverbsService, ProverbsModel, SeederService, ConfigService],
 })
 export class ProverbsModule {}

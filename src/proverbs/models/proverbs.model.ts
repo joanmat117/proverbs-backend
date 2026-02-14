@@ -1,77 +1,79 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { Proverb } from "../types/proverb.type";
-import {randomUUID} from 'node:crypto'
-import { CreateProverbDto } from "../dto/create-proverb.dto";
-import { UpdateProverbDto } from "../dto/update-proverb.dto";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Proverb } from '../types/proverb.type';
+import { randomUUID } from 'node:crypto';
+import { CreateProverbDto } from '../dto/create-proverb.dto';
+import { UpdateProverbDto } from '../dto/update-proverb.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ProverbsModel {
-  
-  private proverbs:Proverb[] = []
 
-  getAll(){
-    return this.proverbs
+  constructor(
+    private readonly prisma: PrismaService
+  ){}
+
+  async getAll() {
+    return await this.prisma.proverbs.findMany()
   }
 
-  getOne(id:string){
-    return this.proverbs.find((proverb)=>id === proverb.id)
+  async getOne(id: string) {
+    return await this.prisma.proverbs.findUnique({
+      where: {id}
+    })
   }
 
-  create(proverb:CreateProverbDto){
-  
-    const id = randomUUID()
+  async create(proverb: CreateProverbDto) {
 
-    this.proverbs.push({
-      content:proverb.content,
-      id,
-      created_at: new Date()
+    const newProverb = await this.prisma.proverbs.create({
+      data: {
+        content: proverb.content
+      }
     })
 
-    return id 
+    return newProverb
   }
 
-  bulkCreate(proverbs:CreateProverbDto[]){
-    this.proverbs = [
-      ...this.proverbs,
-      ...proverbs.map(proverb=>({
-        content:proverb.content,
-        id:randomUUID(),
-        created_at: new Date()
-      }))
-    ]
+  async bulkCreate(proverbs: CreateProverbDto[]) {
+   
+    const newProverbs = await this.prisma.proverbs.createMany({
+      data: proverbs 
+    })
 
-    return true
+    return newProverbs
   }
 
-  delete(id:string){
-    const filteredProverbs = this.proverbs.filter(proverb=>proverb.id !== id)
+  async delete(id: string) {
     
-    if(filteredProverbs.length === this.proverbs.length) return false
+    await this.prisma.proverbs.delete({
+      where: {id}
+    })
 
-    this.proverbs = filteredProverbs
-
-    return true
+    return true;
   }
 
-  update(id:string,changes:UpdateProverbDto){
+  async update(id: string, {content}: UpdateProverbDto) {
+
+    const updatedProverb = await this.prisma.proverbs.update({
+      where:{id},
+      data:{content}
+    })
+
+    return updatedProverb;
+  }
+
+  async getRandom() {
     
-    const proverbIdx = this.proverbs.findIndex(proverb=>proverb.id === id)
+    const count = await this.prisma.proverbs.count()
 
-    if(proverbIdx === -1) return
+    if (count === 0) throw new NotFoundException('There are not proverbs avaliable');
 
-    this.proverbs[proverbIdx] = {
-      ...this.proverbs[proverbIdx],
-      ...changes      
-    }
+    const randomIdx = Math.floor(Math.random() * count);
 
-    return this.proverbs[proverbIdx]
+    const [randomProverb] = await this.prisma.proverbs.findMany({
+      skip:randomIdx,
+      take: 1
+    })
+
+    return randomProverb
   }
-
-  getRandom(){
-    if(this.proverbs.length === 0) throw new NotFoundException()
-    const randomIdx = Math.trunc((this.proverbs.length) * Math.random())
-
-    return this.proverbs[randomIdx]
-  }
-
 }

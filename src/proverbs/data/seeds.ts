@@ -1,4 +1,4 @@
-import { CreateProverbDto } from "../dto/create-proverb.dto";
+import { CreateProverbDto } from '../dto/create-proverb.dto';
 
 export const PROVERBS_SEED: CreateProverbDto[] = [
   'Más vale tarde que nunca',
@@ -10,5 +10,5 @@ export const PROVERBS_SEED: CreateProverbDto[] = [
   'Camarón que se duerme, se lo lleva la corriente',
   'A palabras necias, oídos sordos',
   'Nadie es profeta en su tierra',
-  'A mal tiempo, buena cara'
-].map(string => ({ content: string }));
+  'A mal tiempo, buena cara',
+].map((string) => ({ content: string }));

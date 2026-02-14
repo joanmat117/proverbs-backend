@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, HttpCode, HttpStatus, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseUUIDPipe,
+  HttpCode,
+  HttpStatus,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ProverbsService } from './proverbs.service';
 import { CreateProverbDto } from './dto/create-proverb.dto';
 import { UpdateProverbDto } from './dto/update-proverb.dto';
@@ -8,71 +20,70 @@ import { SeederService } from './seeder.service';
 export class ProverbsController {
   constructor(
     private readonly proverbsService: ProverbsService,
-    private readonly seederService: SeederService
+    private readonly seederService: SeederService,
   ) {}
 
   @Post('seed')
   @HttpCode(HttpStatus.CREATED)
-  seed(){
-    const isPopulated = this.seederService.populateProverbs() 
+  async seed() {
+    const isPopulated = await this.seederService.populateProverbs();
 
-    if(!isPopulated){
-      throw new InternalServerErrorException('Can not populate db with proverbs')
+    if (!isPopulated) {
+      throw new InternalServerErrorException(
+        'Can not populate db with proverbs',
+      );
     }
 
     return {
-      message: 'Proverbs DB successfully populated'
-    }
+      message: 'Proverbs DB successfully populated',
+    };
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createProverbDto: CreateProverbDto) {
-    const proverbId = this.proverbsService.create(createProverbDto)
+  async create(@Body() createProverbDto: CreateProverbDto) {
+    const newProverb = await this.proverbsService.create(createProverbDto);
 
     return {
-      message:`Proverb successfully created`,
-      id:proverbId
-    }
+      message: `Proverb successfully created`,
+      data: newProverb
+    };
   }
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  getAll() {
-    return this.proverbsService.getAll();
+  async getAll() {
+    return await this.proverbsService.getAll();
   }
 
   @Get('random')
   @HttpCode(HttpStatus.OK)
-  getRandom(){
-    return this.proverbsService.getRandom()
+  async getRandom() {
+    return await this.proverbsService.getRandom()
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  getOne(@Param('id',ParseUUIDPipe) id: string) {
-    const res = this.proverbsService.getOne(id)
-    return res
+  async getOne(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.proverbsService.getOne(id);
   }
-
 
   @Patch(':id')
   @HttpCode(HttpStatus.PARTIAL_CONTENT)
-  update(@Param('id',ParseUUIDPipe) id: string, @Body() updateProverbDto: UpdateProverbDto) {
-    return this.proverbsService.update(id, updateProverbDto);
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateProverbDto: UpdateProverbDto,
+  ) {
+    return await this.proverbsService.update(id, updateProverbDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  delete(@Param('id',ParseUUIDPipe) id: string) {
-    
-
-    const res = this.proverbsService.delete(id)
+  async delete(@Param('id', ParseUUIDPipe) id: string) {
+    const deletedProverb = await this.proverbsService.delete(id);
 
     return {
-      message:`Proverb ${id} ${!res && 'was not' } successfully deleted`
-    }
+      message: `Proverb ${id} ${!deletedProverb && 'was not'} successfully deleted`,
+    };
   }
-
-  
 }

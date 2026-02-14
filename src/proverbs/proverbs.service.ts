@@ -6,44 +6,44 @@ import { Proverb } from './types/proverb.type';
 
 @Injectable()
 export class ProverbsService {
+  constructor(private readonly proverbsModel: ProverbsModel) {}
 
-  constructor(
-    private readonly proverbsModel: ProverbsModel
-  ){}
-
-  create(createProverbDto: CreateProverbDto): string {
-    return this.proverbsModel.create(createProverbDto)
+  async create(createProverbDto: CreateProverbDto) {
+    return await this.proverbsModel.create(createProverbDto);
   }
 
-  getAll():Proverb[] {
-    return this.proverbsModel.getAll();
+  async getAll() {
+    return await this.proverbsModel.getAll();
   }
 
-  getOne(id: string):Proverb {
-    const res = this.proverbsModel.getOne(id)
+  async getOne(id: string) {
+    const res = await this.proverbsModel.getOne(id);
 
-    if(!res) throw new NotFoundException(`Proverb with id ${id} does not exists`)
+    if (!res)
+      throw new NotFoundException(`Proverb with id ${id} does not exists`);
 
-    return res
+    return res;
   }
 
-  update(id: string, updateProverbDto: UpdateProverbDto):Proverb {
-    const res = this.proverbsModel.update(id,updateProverbDto)
+  async update(id: string, updateProverbDto: UpdateProverbDto) {
+    const res = await this.proverbsModel.update(id, updateProverbDto);
 
-    if(!res) throw new NotFoundException(`Proverb with id ${id} does not exists`)
+    if (!res)
+      throw new NotFoundException(`Proverb with id ${id} does not exists`);
 
-    return res
+    return res;
   }
 
-  delete(id: string):Boolean {
-    const res = this.proverbsModel.delete(id)
+  async delete(id: string) {
+    const res = await this.proverbsModel.delete(id);
 
-    if(!res) throw new NotFoundException(`Proverb with id ${id} does not exists`)
+    if (!res)
+      throw new NotFoundException(`Proverb with id ${id} does not exists`);
 
-    return res
+    return res;
   }
 
-  getRandom():Proverb {
-    return this.proverbsModel.getRandom()
+  async getRandom() {
+    return await this.proverbsModel.getRandom();
   }
 }
