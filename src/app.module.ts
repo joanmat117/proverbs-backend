@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { ProverbsModule } from './proverbs/proverbs.module';
+import { ExercisesModule } from './exercises/exercises.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 
@@ -10,7 +10,7 @@ import { PrismaModule } from './prisma/prisma.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    ProverbsModule,
+    ExercisesModule,
     PrismaModule
   ],
   controllers: [AppController],
