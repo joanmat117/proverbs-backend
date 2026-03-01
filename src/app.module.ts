@@ -3,6 +3,8 @@ import { AppController } from './app.controller';
 import { ExercisesModule } from './exercises/exercises.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -11,7 +13,9 @@ import { PrismaModule } from './prisma/prisma.module';
       envFilePath: '.env',
     }),
     ExercisesModule,
-    PrismaModule
+    PrismaModule,
+    AuthModule,
+    UsersModule
   ],
   controllers: [AppController],
   providers: [],

@@ -31,3 +31,10 @@ enum Category {
   trigonometry
   functions
 }
+
+model users {
+  id String @id @default(uuid())
+  username String @unique
+  password String
+  created_at DateTime @default(now())
+}
